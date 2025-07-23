@@ -1,8 +1,8 @@
 # Makefile
 install:
-	@echo "Создание виртуального окружения..."
+	@echo "Creating virtual environment..."
 	python -m venv .venv
-	@echo "Активация виртуального окружения..."
+	@echo "Activating virtual environment..."
 	. .venv/bin/activate && pip install -r requirements.txt
-	@echo "Установка ansible коллекций..."
+	@echo "Installing ansible collections..."
 	ansible-galaxy collection install -r requirements.yml -p ./collections
