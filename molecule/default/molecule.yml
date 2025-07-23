@@ -1,0 +1,19 @@
+---
+dependency:
+  enabled: true
+  name: galaxy
+  options:
+    requirements-file: ../../requirements.yml
+    collections-path: ../../collections
+driver:
+  name: docker
+platforms:
+  - name: instance
+    image: geerlingguy/docker-debian-12-ansible
+    pre_build_image: true
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_COLLECTIONS_PATH: "../../collections"
+verifier:
+  name: ansible
