@@ -1,0 +1,26 @@
+---
+# Install elasticsearch from deb packages
+  - name: Make sure that gnupg and apt-transport-https packages are present
+    ansible.builtin.apt:
+      pkg:
+        - gnupg
+        - apt-transport-https
+      state: present
+      update_cache: true
+
+  - name: Add elasticsearch repo
+    ansible.builtin.deb822_repository:
+      name: "elasticsearch"
+      types: [deb]
+      uris: "https://artifacts.elastic.co/packages/9.x/apt"
+      signed_by: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+      suites: "stable"
+      components: [main]
+      state: present
+      enabled: true
+
+  - name: Install elasticsearch package
+    ansible.builtin.apt:
+      name: elasticsearch
+      state: present
+      update_cache: true

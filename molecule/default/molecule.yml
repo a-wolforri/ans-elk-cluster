@@ -5,15 +5,62 @@ dependency:
   options:
     requirements-file: ../../requirements.yml
     collections-path: ../../collections
+
 driver:
   name: docker
+
 platforms:
-  - name: instance
-    image: geerlingguy/docker-debian-12-ansible
+  - name: 10.172.0.20
+    image: "${IMAGE_NAME:-geerlingguy/docker-debian12-ansible}:${IMAGE_TAG:-latest}"
+    networks:
+      - name: test_docker_network
+        ipv4_address: 10.172.0.20
+    exposed_ports:
+      - 22/tcp
+      - 80/tcp
+    command: ""
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /parsecfs:/parsecfs
+    cgroupns_mode: host
+    privileged: true
     pre_build_image: true
+
+  - name: 10.172.0.21
+    image: "${IMAGE_NAME:-geerlingguy/docker-debian12-ansible}:${IMAGE_TAG:-latest}"
+    networks:
+      - name: test_docker_network
+        ipv4_address: 10.172.0.21
+    exposed_ports:
+      - 22/tcp
+      - 80/tcp
+    command: ""
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /parsecfs:/parsecfs
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+
+  - name: 10.172.0.22
+    image: "${IMAGE_NAME:-geerlingguy/docker-debian12-ansible}:${IMAGE_TAG:-latest}"
+    networks:
+      - name: test_docker_network
+        ipv4_address: 10.172.0.22
+    exposed_ports:
+      - 22/tcp
+      - 80/tcp
+    command: ""
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /parsecfs:/parsecfs
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+
 provisioner:
   name: ansible
   env:
-    ANSIBLE_COLLECTIONS_PATH: "../../collections"
+    ANSIBLE_COLLECTIONS_PATH: "../../../collections"
 verifier:
   name: ansible

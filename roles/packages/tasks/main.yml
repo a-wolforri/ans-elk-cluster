@@ -1,0 +1,7 @@
+---
+# Install packages
+- name: Install packages
+  ansible.builtin.apt:
+    name: python3-debian
+    state: present
+    update_cache: true

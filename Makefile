@@ -6,3 +6,9 @@ install:
 	. .venv/bin/activate && pip install -r requirements.txt
 	@echo "Installing ansible collections..."
 	ansible-galaxy collection install -r requirements.yml -p ./collections
+
+test:
+	molecule destroy
+	molecule prepare
+	molecule create
+	molecule converge

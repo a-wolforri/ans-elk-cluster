@@ -107,3 +107,4 @@ urllib3==2.5.0
     #   requests
 wcmatch==10.1
     # via molecule
+python-debian==1.0.1
