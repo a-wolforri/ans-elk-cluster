@@ -4,3 +4,4 @@ __pycache__/
 collections/
 **/inventory
 **/.vscode
+.ansible-lint

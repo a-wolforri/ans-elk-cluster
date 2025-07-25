@@ -3,6 +3,7 @@
   hosts: all
   gather_facts: true
   tasks:
+
     - name: Include elascticsearch install
       ansible.builtin.include_role:
         name: ../../roles/packages

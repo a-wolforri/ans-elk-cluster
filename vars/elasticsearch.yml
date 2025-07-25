@@ -1,0 +1,12 @@
+---
+################################################################
+## IMPORTANT: JVM heap size in mb (m) or gb (g)
+################################################################
+jvm_heap_size_min: "1024m"
+jvm_heap_size_max: "1024m"
+## See https://www.elastic.co/guide/en/elasticsearch/reference/9.0/heap-size.html
+## for more information
+elasticsearch_user: elasticsearch
+elasticsearch_group: elasticsearch
+elasticsearch_config_dir: /etc/elasticsearch
+

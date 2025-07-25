@@ -1,26 +1,69 @@
 ---
 # Install elasticsearch from deb packages
-  - name: Make sure that gnupg and apt-transport-https packages are present
-    ansible.builtin.apt:
-      pkg:
-        - gnupg
-        - apt-transport-https
-      state: present
-      update_cache: true
 
-  - name: Add elasticsearch repo
-    ansible.builtin.deb822_repository:
-      name: "elasticsearch"
-      types: [deb]
-      uris: "https://artifacts.elastic.co/packages/9.x/apt"
-      signed_by: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
-      suites: "stable"
-      components: [main]
-      state: present
-      enabled: true
+- name: Include vars
+  ansible.builtin.include_vars: "../../../vars/elasticsearch.yml"
 
-  - name: Install elasticsearch package
-    ansible.builtin.apt:
-      name: elasticsearch
-      state: present
-      update_cache: true
+- name: Make sure that gnupg and apt-transport-https packages are present
+  ansible.builtin.apt:
+    pkg:
+      - gnupg
+      - apt-transport-https
+    state: present
+    update_cache: true
+
+- name: Add elasticsearch repo
+  ansible.builtin.deb822_repository:
+    name: "elasticsearch"
+    types: [deb]
+    uris: "https://artifacts.elastic.co/packages/9.x/apt"
+    signed_by: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+    suites: "stable"
+    components: [main]
+    state: present
+    enabled: true
+
+- name: Install elasticsearch package
+  ansible.builtin.apt:
+    name: elasticsearch
+    state: present
+    update_cache: true
+
+- name: Make sure /etc/elasticsearch/certs owner is elasticsearch
+  ansible.builtin.file:
+    path: /etc/elasticsearch/certs
+    state: directory
+    owner: elasticsearch
+    group: elasticsearch
+    mode: '0750'
+    recurse: true
+
+- name: Ensure elascticsearch config directory exist
+  ansible.builtin.file:
+    path: "{{ elasticsearch_config_dir }}"
+    state: directory
+    owner: "{{ elasticsearch_user }}"
+    group: "{{ elasticsearch_group }}"
+    mode: '2750'
+
+- name: Ensure elascticsearch jvm.options directory exist
+  ansible.builtin.file:
+    path: "{{ elasticsearch_config_dir }}/jvm.options.d"
+    state: directory
+    owner: "{{ elasticsearch_user }}"
+    group: "{{ elasticsearch_group }}"
+    mode: '2750'
+
+- name: Edit custom JVM options
+  ansible.builtin.template:
+    src: custom.options.j2
+    dest: "{{ elasticsearch_config_dir }}/jvm.options.d/custom.options"
+    owner: "{{ elasticsearch_user }}"
+    group: "{{ elasticsearch_group }}"
+    mode: '2750'
+
+- name: Start elasticsearch.service
+  ansible.builtin.systemd:
+    name: elasticsearch
+    state: started
+    enabled: true
