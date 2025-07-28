@@ -10,7 +10,7 @@ driver:
   name: docker
 
 platforms:
-  - name: 10.172.0.20
+  - name: elastic-node0
     image: "${IMAGE_NAME:-geerlingguy/docker-debian12-ansible}:${IMAGE_TAG:-latest}"
     networks:
       - name: test_docker_network
@@ -25,8 +25,11 @@ platforms:
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
+    groups:
+      - master_nodes
+      - data_nodes
 
-  - name: 10.172.0.21
+  - name: elastic-node1
     image: "${IMAGE_NAME:-geerlingguy/docker-debian12-ansible}:${IMAGE_TAG:-latest}"
     networks:
       - name: test_docker_network
@@ -41,8 +44,11 @@ platforms:
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
+    groups:
+      - master_nodes
+      - data_nodes
 
-  - name: 10.172.0.22
+  - name: elastic-node2
     image: "${IMAGE_NAME:-geerlingguy/docker-debian12-ansible}:${IMAGE_TAG:-latest}"
     networks:
       - name: test_docker_network
@@ -57,6 +63,9 @@ platforms:
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
+    groups:
+      - master_nodes
+      - data_nodes
 
 provisioner:
   name: ansible

@@ -1,12 +1,46 @@
 ---
 ################################################################
 ## IMPORTANT: JVM heap size in mb (m) or gb (g)
-################################################################
 jvm_heap_size_min: "1024m"
 jvm_heap_size_max: "1024m"
 ## See https://www.elastic.co/guide/en/elasticsearch/reference/9.0/heap-size.html
-## for more information
+## for more information "{{ groups['master_nodes'] | map('extract', hostvars, 'ansible_hostname') | list }}"
+################################################################ "{{ groups['master_nodes'] | map('extract', hostvars, 'ansible_host') | list }}"
 elasticsearch_user: elasticsearch
 elasticsearch_group: elasticsearch
 elasticsearch_config_dir: /etc/elasticsearch
+
+elasticsearch_cluster_name: test
+elasticsearch_port: 9200
+elasticsearch_discovery_seed_hosts:
+  - 10.172.0.20
+  - 10.172.0.21
+  - 10.172.0.22
+elasticsearch_initial_master_nodes:
+  - elastic-node0
+  - elastic-node1
+  - elastic-node2
+
+elasticsearch_roles:
+  master_nodes:
+    node_roles:
+      - master
+    network_host: 0.0.0.0
+  data_nodes:
+    node_roles:
+      - data
+    network_host: 0.0.0.0
+  voting_only_nodes:
+    node_roles:
+      - master
+      - voting_only
+    network_host: 0.0.0.0
+  coordinating_nodes:
+    node_roles:
+      - coordinating_only
+    network_host: 0.0.0.0
+  ingest_nodes:
+    node_roles:
+      - ingest
+    network_host: 0.0.0.0
 

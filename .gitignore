@@ -5,3 +5,4 @@ collections/
 **/inventory
 **/.vscode
 .ansible-lint
+.ansible
