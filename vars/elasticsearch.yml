@@ -27,7 +27,7 @@ elasticsearch_nodes:
   elastic-node1:
     node_roles: ["master", "data"]
   elastic-node2:
-    node_roles: ["data"]
+    node_roles: ["master", "data"]
 
 
 # ###########################[balancers]################################

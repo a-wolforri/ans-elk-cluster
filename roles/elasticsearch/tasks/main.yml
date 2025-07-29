@@ -50,7 +50,7 @@
     group: "{{ elasticsearch_group }}"
     mode: '2750'
 
-- name: Ensure elascticsearch jvm.options directory exist
+- name: Ensure elasticsearch jvm.options directory exist
   ansible.builtin.file:
     path: "{{ elasticsearch_config_dir }}/jvm.options.d"
     state: directory
@@ -82,3 +82,10 @@
     group: "{{ elasticsearch_group }}"
     mode: '0660'
   notify: "restart elasticsearch"
+
+- name: Start elasticsearch service
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: elasticsearch
+    enabled: true
+    state: started

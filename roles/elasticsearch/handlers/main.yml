@@ -1,6 +1,8 @@
 ---
-- name: Restart elasticsearch.service
+- name: Restart elasticsearch service
   ansible.builtin.systemd:
+    daemon_reload: true
     name: elasticsearch
+    enabled: true
     state: restarted
-  listen: "restart elascticsearch"
+  listen: "restart elasticsearch"
