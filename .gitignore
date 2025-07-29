@@ -2,7 +2,6 @@
 *.pyc
 __pycache__/
 collections/
-**/inventory
 **/.vscode
 .ansible-lint
 .ansible
