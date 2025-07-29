@@ -1,0 +1,20 @@
+---
+- name: Deploy ELK HA Cluster (Setup Deploy Variables)
+  hosts: all
+  gather_facts: true
+
+  tasks:
+    - name: Include vars
+      ansible.builtin.include_vars: "vars/elasticsearch.yml"
+
+    - name: Include packages install
+      ansible.builtin.include_role:
+        name: ../../roles/packages
+
+    - name: Include elascticsearch install
+      ansible.builtin.include_role:
+        name: ../../roles/elasticsearch
+
+    - name: Include haproxy install
+      ansible.builtin.include_role:
+        name: ../../roles/haproxy

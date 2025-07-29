@@ -12,33 +12,46 @@ elasticsearch_config_dir: /etc/elasticsearch
 
 elasticsearch_cluster_name: test
 elasticsearch_port: 9200
+elasticsearch_network_host: 0.0.0.0
 elasticsearch_discovery_seed_hosts:
   - 10.172.0.20
   - 10.172.0.21
   - 10.172.0.22
 elasticsearch_initial_master_nodes:
   - elastic-node0
+  - elastic-node1
 
 elasticsearch_nodes:
-  master_nodes:
-    node_roles:
-      - master
-    network_host: 0.0.0.0
-  data_nodes:
-    node_roles:
-      - data
-    network_host: 0.0.0.0
-  voting_only_nodes:
-    node_roles:
-      - master
-      - voting_only
-    network_host: 0.0.0.0
-  coordinating_nodes:
-    node_roles:
-      - coordinating_only
-    network_host: 0.0.0.0
-  ingest_nodes:
-    node_roles:
-      - ingest
-    network_host: 0.0.0.0
+  elastic-node0:
+    node_roles: ["master"]
+  elastic-node1:
+    node_roles: ["master", "data"]
+  elastic-node2:
+    node_roles: ["data"]
 
+
+# ###########################[balancers]################################
+# Load Balancing
+haproxy_installation_method: "deb" # 'deb' (deafult) or 'src'(TO DO)
+
+cluster_vip: ""
+vip_interface: "{{ ansible_default_ipv4.interface }}" # interface name (e.g., "ens33")
+
+haproxy_listen_port:
+  elastic: 9000
+  stats: 7000
+haproxy_maxconn:
+  global: 10000
+haproxy_timeout:
+  client: "60m"
+  server: "60m"
+
+haproxy_balance_strategy: roundrobin
+
+# HAProxy stat conf
+haproxy_stats_port: 7000
+haproxy_stats_user: admin
+haproxy_stats_password: admin
+
+keepalived_virtual_router_id: "{{ cluster_vip.split('.')[3] | int }}" # The last octet of 'cluster_vip' IP address is used by default.
+# virtual_router_id must be qnique in the network!

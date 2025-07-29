@@ -1,9 +1,5 @@
 ---
 # Install elasticsearch from deb packages
-
-- name: Include vars
-  ansible.builtin.include_vars: "../../../vars/elasticsearch.yml"
-
 - name: Make sure that gnupg and apt-transport-https packages are present
   ansible.builtin.apt:
     pkg:
@@ -11,6 +7,10 @@
       - apt-transport-https
     state: present
     update_cache: true
+  register: package_status
+  until: package_status is success
+  delay: 5
+  retries: 3
 
 - name: Add elasticsearch repo
   ansible.builtin.deb822_repository:
@@ -28,6 +28,10 @@
     name: elasticsearch
     state: present
     update_cache: true
+  register: package_status
+  until: package_status is success
+  delay: 5
+  retries: 3
 
 - name: Make sure /etc/elasticsearch/certs owner is elasticsearch
   ansible.builtin.file:
@@ -62,6 +66,14 @@
     group: "{{ elasticsearch_group }}"
     mode: '2750'
 
+- name: Generate systemd service file "/etc/systemd/system/elasticsearch.service"
+  ansible.builtin.template:
+    src: elasticsearch.service.j2
+    dest: /etc/systemd/system/elasticsearch.service
+    owner: root
+    group: root
+    mode: '0644'
+
 - name: Deploy elascticsearch configuration
   ansible.builtin.template:
     src: elasticsearch.yml.j2
@@ -69,10 +81,4 @@
     owner: "{{ elasticsearch_user }}"
     group: "{{ elasticsearch_group }}"
     mode: '0660'
-#   notify: Restart elasticsearch.service
-
-- name: Ensure elascticsearch.service is running
-  ansible.builtin.systemd:
-    name: elasticsearch
-    state: started
-    enabled: true
+  notify: "restart elasticsearch"

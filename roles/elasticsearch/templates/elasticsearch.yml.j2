@@ -21,10 +21,8 @@
 # Use a descriptive name for the node:
 #
 node.name: {{ ansible_hostname }}
-node.roles: {{ elasticsearch_roles[group_names[0]]['node_roles'] | to_json }}
-{% if 'voting_only' in elasticsearch_roles[group_names[0]]['node_roles'] %}
-node.voting_only: true
-{% endif %}
+node.roles: {{ elasticsearch_nodes[inventory_hostname].node_roles | to_json }}
+
 # Add custom attributes to the node:
 #
 #node.attr.rack: r1
@@ -56,7 +54,7 @@ path.logs: /var/log/elasticsearch
 # By default Elasticsearch is only accessible on localhost. Set a different
 # address here to expose this node on the network:
 #
-network.host: {{ elasticsearch_roles[group_names[0]]['network_host'] | to_json }}
+network.host: {{ elasticsearch_network_host }}
 #
 # By default Elasticsearch listens for HTTP traffic on the first free port it
 # finds starting at 9200. Set a specific HTTP port here:

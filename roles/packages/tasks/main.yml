@@ -5,3 +5,7 @@
     name: python3-debian
     state: present
     update_cache: true
+  register: package_status
+  until: package_status is success
+  delay: 5
+  retries: 3

@@ -2,12 +2,6 @@
 - name: Converge
   hosts: all
   gather_facts: true
-  tasks:
 
-    - name: Include elascticsearch install
-      ansible.builtin.include_role:
-        name: ../../roles/packages
-
-    - name: Include elascticsearch install
-      ansible.builtin.include_role:
-        name: ../../roles/elasticsearch
+- name: Include ../../deploy-elkcluster.yml
+  ansible.builtin.import_playbook: ../../deploy-elkcluster.yml
