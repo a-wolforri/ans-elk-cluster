@@ -83,9 +83,9 @@
     mode: '0660'
   notify: "restart elasticsearch"
 
-- name: Start elasticsearch service
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: elasticsearch
-    enabled: true
-    state: started
+# - name: Start elasticsearch service
+#   ansible.builtin.systemd:
+#     daemon_reload: true
+#     name: elasticsearch
+#     enabled: true
+#     state: started

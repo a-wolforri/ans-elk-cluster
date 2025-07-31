@@ -25,13 +25,13 @@ defaults
 
 listen stats
     mode http
-    bind {{ inventory_hostname }}:{{ haproxy_listen_port.stats }}
+    bind {{ cluster_vip }}:{{ haproxy_listen_port.stats }}
     stats enable
     stats uri /stats
     stats auth {{ haproxy_stats_user }}:{{ haproxy_stats_password }}
 
 frontend elasticsearch_front
-    bind {{ inventory_hostname }}:{{ haproxy_listen_port.elastic }}
+    bind {{ cluster_vip }}:{{ haproxy_listen_port.elastic }}
     mode http
     option httpchk GET /_cluster/health
     default_backend elasticsearch_back

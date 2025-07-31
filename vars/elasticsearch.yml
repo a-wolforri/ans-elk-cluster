@@ -34,7 +34,7 @@ elasticsearch_nodes:
 # Load Balancing
 haproxy_installation_method: "deb" # 'deb' (deafult) or 'src'(TO DO)
 
-cluster_vip: ""
+cluster_vip: "10.172.0.100" # IP address keepalived
 vip_interface: "{{ ansible_default_ipv4.interface }}" # interface name (e.g., "ens33")
 
 haproxy_listen_port:

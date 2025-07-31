@@ -18,3 +18,7 @@
     - name: Include haproxy install
       ansible.builtin.include_role:
         name: ../../roles/haproxy
+
+    - name: Include keepalived install
+      ansible.builtin.include_role:
+        name: ../../roles/keepalived
