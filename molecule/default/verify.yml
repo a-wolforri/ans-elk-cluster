@@ -1,0 +1,19 @@
+---
+- name: Molecule.default.verify
+  hosts: all
+  gather_facts: true
+
+  tasks:
+    - name: Molecule.default.verify | Include Main Variables
+      ansible.builtin.include_vars:
+        file: ../../vars/elasticsearch.yml # TO DO: rename to main.yml
+
+    # - name: Molecule.default.verify | Include OS-Specific Variables # TO DO
+    #   ansible.builtin.include_vars:
+    #     file: "../../vers/{{ ansible_os_family }}.yml"
+
+    - name: Molecule.default.verify | Include all tests
+      ansible.builtin.include_tasks: "{{ item }}"
+      with_fileglob:
+        - ../tests/
+# TO DO:
