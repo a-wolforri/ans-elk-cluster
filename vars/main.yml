@@ -1,11 +1,17 @@
 ---
+# -------------------------------------------------------------------
+# Proxt variables (optional) for download packages using proxy server
+proxy_env: {}
+# http_proxy: http://10.128.64.9:3128
+# https_proxy: https://10.128.64.9:3128
+# -------------------------------------------------------------------
 ################################################################
 ## IMPORTANT: JVM heap size in mb (m) or gb (g)
 jvm_heap_size_min: "1024m"
 jvm_heap_size_max: "1024m"
 ## See https://www.elastic.co/guide/en/elasticsearch/reference/9.0/heap-size.html
-## for more information "{{ groups['master_nodes'] | map('extract', hostvars, 'ansible_hostname') | list }}"
-################################################################ "{{ groups['master_nodes'] | map('extract', hostvars, 'ansible_host') | list }}"
+## for more information
+################################################################
 elasticsearch_user: elasticsearch
 elasticsearch_group: elasticsearch
 elasticsearch_config_dir: /etc/elasticsearch
@@ -32,6 +38,7 @@ elasticsearch_nodes:
 
 # ###########################[balancers]################################
 # Load Balancing
+with_haproxy_load_balancing: true
 haproxy_installation_method: "deb" # 'deb' (deafult) or 'src'(TO DO)
 
 cluster_vip: "10.172.0.100" # IP address keepalived
@@ -55,17 +62,3 @@ haproxy_stats_password: admin
 
 keepalived_virtual_router_id: "{{ cluster_vip.split('.')[3] | int }}" # The last octet of 'cluster_vip' IP address is used by default.
 # virtual_router_id must be qnique in the network!
-
-keepalived_instances:
-  haproxy_node:
-    state: BACKUP
-    interface: "{{ vip_interface }}"
-    virtual_router_id: "{{ keepalived_virtual_router_id | default(123) }}"
-    priority: 100
-    advert_int: 2
-    check_status_command: /usr/libexec/keepalived/haproxy_check.sh
-    authentication:
-      auth_type: PASS
-      auth_pass: "1ce24b6e"
-    virtual_ipaddresses:
-      - "{{ cluster_vip }}"

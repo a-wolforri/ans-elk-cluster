@@ -1,24 +1,114 @@
 ---
-- name: Deploy ELK HA Cluster (Setup Deploy Variables)
+- name: Deploy_elkcluster.yml | Perform pre-checks
   hosts: all
+  become: true
+  become_method: ansible.builtin.sudo
   gather_facts: true
+  any_errors_fatal: true
+  environment: "{{ proxy_env | default({}) }}"
 
-  tasks:
-    - name: Include vars
-      ansible.builtin.include_vars: "vars/elasticsearch.yml"
+  pre_tasks:
+    - name: Include main variables
+      ansible.builtin.include_vars: "vars/main.yml"
+      tags: always
 
-    - name: Include packages install
-      ansible.builtin.include_role:
-        name: ../../roles/packages
+    - name: Include system variables
+      ansible.builtin.include_vars: "vars/system.yml"
+      tags: always
 
-    - name: Include elasticsearch install
-      ansible.builtin.include_role:
-        name: ../../roles/elasticsearch
+    # - name: Include OS-specific variables
+    #   ansible.builtin.include_vars: "vars/{{ ansible_os_family }}.yml"
+    #   tags: always
 
-    - name: Include haproxy install
-      ansible.builtin.include_role:
-        name: ../../roles/haproxy
+    - name: System info
+      ansible.builtin.debug:
+        msg:
+          server_name: "{{ hostname | default(ansible_hostname) }}"
+          server_location: "{{ server_location | default(omit) }}"
+          ip_address: "{{ inventory_hostname | default('N/A') }}"
+          os: "{{ ansible_distribution | default('N/A') }} {{ ansible_distribution_version | default('N/A') }}"
+          kernel: "{{ ansible_kernel | default('N/A') }}"
+          cpu:
+            model: "{{ ansible_processor[2] | default('N/A') }}"
+            count: "{{ ansible_processor_count | default('N/A') }}"
+            cores: "{{ ansible_processor_cores | default('N/A') }}"
+          memory: "{{ (ansible_memtotal_mb / 1024) | round(2) if ansible_memtotal_mb is defined else 'N/A' }} GB"
+          disk_space_total: >-
+            {{
+              (ansible_mounts
+                | map(attribute='size_total')
+                | map('int')
+                | sum / 1024 / 1024 / 1024
+              )
+              | round(2) if ansible_mounts is defined else 'N/A'
+            }} GB
+          architecture: "{{ ansible_architecture | default('N/A') }}"
+          virtualization_type: "{{ ansible_virtualization_type | default('N/A') }}"
+          product_name: "{{ ansible_product_name | default('N/A') }}"
+      tags: always
 
-    - name: Include keepalived install
-      ansible.builtin.include_role:
-        name: ../../roles/keepalived
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+      register: apt_status
+      until: apt_status is success
+      delay: 5
+      retries: 3
+
+    - name: Make sure that gnupg and apt-transport-https packages are present
+      ansible.builtin.apt:
+        pkg:
+          - gnupg
+          - apt-transport-https
+        state: present
+      register: package_status
+      until: package_status is success
+      delay: 5
+      retries: 3
+
+    - name: Make sure that the iproute is installed
+      ansible.builtin.apt:
+        pkg:
+          - iproute2
+        state: present
+      register: package_status
+      until: package_status is success
+      delay: 5
+      retries: 3
+
+  roles:
+    - role: hostname
+
+- name: Deploy_elkcluster.yml | Elasticsearch Cluster Installation
+  hosts: elasticsearch
+  become: true
+  become_method: ansible.builtin.sudo
+  gather_facts: true
+  any_errors_fatal: true
+  environment: "{{ proxy_env | default({}) }}"
+
+  pre_tasks:
+    - name: Include main variables
+      ansible.builtin.include_vars: "vars/main.yml"
+      tags: always
+
+    - name: Include system variables
+      ansible.builtin.include_vars: "vars/system.yml"
+      tags: always
+
+    # - name: Include OS-specific variables
+    #   ansible.builtin.include_vars: "vars/{{ ansible_os_family }}.yml"
+    #   tags: always
+
+  roles:
+    - role: resolv_conf
+    # - role: etc_hosts
+    - role: packages
+    - role: timezone
+    - role: elasticsearch
+
+- name: Deploy_elkcluster.yml | Deploy balancers
+  ansible.builtin.import_playbook: balancers.yml
+  when: with_haproxy_load_balancing|bool
+  tags: load_balancing, haproxy
