@@ -1,6 +1,6 @@
 ---
 # -------------------------------------------------------------------
-# Proxt variables (optional) for download packages using proxy server
+# Proxy variables (optional) for download packages using proxy server
 proxy_env: {}
 # http_proxy: http://10.128.64.9:3128
 # https_proxy: https://10.128.64.9:3128
@@ -27,6 +27,7 @@ elasticsearch_initial_master_nodes:
   - elastic-node0
   - elastic-node1
 
+# The node names must be the same as in the inventory file
 elasticsearch_nodes:
   elastic-node0:
     node_roles: ["master"]
@@ -44,6 +45,9 @@ haproxy_installation_method: "deb" # 'deb' (deafult) or 'src'(TO DO)
 cluster_vip: "10.172.0.100" # IP address keepalived
 vip_interface: "{{ ansible_default_ipv4.interface }}" # interface name (e.g., "ens33")
 
+keepalived_virtual_router_id: "{{ cluster_vip.split('.')[3] | int }}" # The last octet of 'cluster_vip' IP address is used by default.
+# virtual_router_id must be qnique in the network!
+
 haproxy_listen_port:
   elastic: 9000
   stats: 7000
@@ -55,10 +59,7 @@ haproxy_timeout:
 
 haproxy_balance_strategy: roundrobin
 
-# HAProxy stat conf
-haproxy_stats_port: 7000
+# HAProxy stat authentication
 haproxy_stats_user: admin
 haproxy_stats_password: admin
 
-keepalived_virtual_router_id: "{{ cluster_vip.split('.')[3] | int }}" # The last octet of 'cluster_vip' IP address is used by default.
-# virtual_router_id must be qnique in the network!

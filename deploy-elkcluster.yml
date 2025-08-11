@@ -80,6 +80,11 @@
   roles:
     - role: hostname
 
+- name: Deploy_elkcluster.yml | Deploy balancers
+  ansible.builtin.import_playbook: balancers.yml
+  when: with_haproxy_load_balancing|bool
+  tags: load_balancing, haproxy
+
 - name: Deploy_elkcluster.yml | Elasticsearch Cluster Installation
   hosts: elasticsearch
   become: true
@@ -104,11 +109,9 @@
   roles:
     - role: resolv_conf
     # - role: etc_hosts
+    - role: hostname
     - role: packages
     - role: timezone
     - role: elasticsearch
 
-- name: Deploy_elkcluster.yml | Deploy balancers
-  ansible.builtin.import_playbook: balancers.yml
-  when: with_haproxy_load_balancing|bool
-  tags: load_balancing, haproxy
+    - role: deploy-finish

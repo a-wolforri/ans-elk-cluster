@@ -1,30 +1,14 @@
 [balancers]
-elk-haproxy0 ansible_host=0.0.0.0 ansible_hostname=elk-haproxy0
-elk-haproxy1 ansible_host=0.0.0.0 ansible_hostname=elk-haproxy1
-elk-haproxy2 ansible_host=0.0.0.0 ansible_hostname=elk-haproxy2
-
-[master_nodes]
-elastic-node0 ansible_host=0.0.0.0 ansible_hostname=elastic-node0
-elastic-node1 ansible_host=0.0.0.0 ansible_hostname=elastic-node1
+elk-haproxy0 ansible_host=0.0.0.0 ansible_hostname=elk-haproxy0 hostname=elk-haproxy0
+elk-haproxy1 ansible_host=0.0.0.0 ansible_hostname=elk-haproxy1 hostname=elk-haproxy1
+elk-haproxy2 ansible_host=0.0.0.0 ansible_hostname=elk-haproxy2 hostname=elk-haproxy2
 
 
-[data_nodes]
-elastic-node1 ansible_host=0.0.0.0 ansible_hostname=elastic-node1
-elastic-node2 ansible_host=0.0.0.0 ansible_hostname=elastic-node2
+[elasticsearch]
+elastic-node0 ansible_host=0.0.0.0 ansible_hostname=elastic-node0 hostname=elastic-node0
+elastic-node1 ansible_host=0.0.0.0 ansible_hostname=elastic-node1 hostname=elastic-node1
+elastic-node2 ansible_host=0.0.0.0 ansible_hostname=elastic-node2 hostname=elastic-node2
 
-[voting_only_nodes]
-
-[coordinating_nodes]
-
-[ingest_nodes]
-
-
-[elasticsearch:children]
-master_nodes
-data_nodes
-voting_only_nodes
-coordinating_nodes
-ingest_nodes
 
 [all:vars]
 anisble_connection='ssh'

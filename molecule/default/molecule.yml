@@ -11,6 +11,7 @@ driver:
 
 platforms:
   - name: elastic-node0
+    hostname: elastic-node0
     image: "${IMAGE_NAME:-geerlingguy/docker-debian12-ansible}:${IMAGE_TAG:-latest}"
     networks:
       - name: test_docker_network
@@ -31,6 +32,7 @@ platforms:
       - elasticsearch
 
   - name: elastic-node1
+    hostname: elastic-node1
     image: "${IMAGE_NAME:-geerlingguy/docker-debian12-ansible}:${IMAGE_TAG:-latest}"
     networks:
       - name: test_docker_network
@@ -51,6 +53,7 @@ platforms:
       - elasticsearch
 
   - name: elastic-node2
+    hostname: elastic-node2
     image: "${IMAGE_NAME:-geerlingguy/docker-debian12-ansible}:${IMAGE_TAG:-latest}"
     networks:
       - name: test_docker_network
@@ -71,6 +74,7 @@ platforms:
       - elasticsearch
 
   - name: haproxy-node0
+    hostname: haproxy-node0
     image: "${IMAGE_NAME:-geerlingguy/docker-debian12-ansible}:${IMAGE_TAG:-latest}"
     networks:
       - name: test_docker_network
@@ -91,6 +95,7 @@ platforms:
       - balancers
 
   - name: haproxy-node1
+    hostname: haproxy-node0
     image: "${IMAGE_NAME:-geerlingguy/docker-debian12-ansible}:${IMAGE_TAG:-latest}"
     networks:
       - name: test_docker_network

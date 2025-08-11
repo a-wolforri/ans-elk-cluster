@@ -1,0 +1,53 @@
+---
+- name: Make sure handlers are flushed immediately
+  ansible.builtin.meta: flush_handlers
+
+# Get info
+- name: Monitor Elasticsearch cluster
+  block:
+    - name: Get elasticsearch cluster health
+      ansible.builtin.uri:
+        url: "http://{{ cluster_vip }}:{{ haproxy_listen_port.elastic }}/_cluster/health?format=json"
+        method: GET
+        return_content: true
+        status_code: 200
+        timeout: 30
+      register: cluster_health
+      until: cluster_health.json.status == "green"
+      retries: 3
+      delay: 5
+      ignore_errors: true
+      run_once: true
+
+    - name: Display cluster health
+      ansible.builtin.debug:
+        msg:
+          Cluster Status: "{{ cluster_health.json.status }}"
+          Number of Nodes: "{{ cluster_health.json.number_of_nodes }}"
+          Active Shards: "{{ cluster_health.json.active_shards }}"
+          Unassigned Shards: "{{ cluster_health.json.unassigned_shards }}"
+          Active Shards Percent: "{{ cluster_health.json.active_shards_percent_as_number }}%"
+      run_once: true
+
+    - name: Get nodes information
+      ansible.builtin.uri:
+        url: "http://{{ cluster_vip }}:{{ haproxy_listen_port.elastic }}/_cat/nodes?format=json"
+        method: GET
+        return_content: true
+        status_code: 200
+        timeout: 30
+      register: nodes_info
+      run_once: true
+
+    - name: Display nodes information
+      ansible.builtin.debug:
+        msg:
+          Node: "{{ item.name }}, IP: {{ item.ip }}, Role: {{ item['node.role'] }}, CPU: {{ item.cpu }}, Mem: {{ item['heap.percent'] }}%"
+      loop: "{{ nodes_info.json }}"
+      run_once: true
+
+    - name: Fail if cluster is not "green"
+      ansible.builtin.fail:
+        msg: "Elasticsearch cluster is not in green state! Status: {{ cluster_health.json.status }}"
+      when: cluster_health.json.status != "green"
+      run_once: true
